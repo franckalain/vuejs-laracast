@@ -2,36 +2,166 @@
 <html>
 <head>
 <title>VueJs-Laracast</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
 </head>
 <body>
-    
-<div id="root">
-    <ul>
-        <li v-for="name in names" v-text="name"></li>
-    </ul>
+    <div id="app">
+        <div class="container">
+            <h3>{{title}}</h3>
+        </div>
 
-    <input id="input" type="text">
-    <button id="button">Add Name</button>
-</div> 
-    
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-7">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th colspan="2">ID</th>
+                            <th>Name</th>
+                            <th colspan="2">Quantity</th>
+                            <th>Price</th>
+                            <th>Item Total</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="pro in products" :key="pro.id">
+                            <td >
+                                <button @click="removeCart(pro)" class="btn btn-danger btn-sm">&times;</button>
+                            </td>
+                            <td>{{pro.id}}</td>   
+                            <td>{{pro.name}}</td>
+                            <td>{{pro.qty}}</td> 
+                            <td>
+                                <button @click="addQty(pro)" class="btn btn-success btn-sm">+</button>
+                                <button @click="removeQty(pro)" class="btn btn-danger btn-sm">-</button>
+                            </td>
+                            <td>$ {{ pro.price}}</td>
+                            <td>$ {{itemtotal(pro) }}</td>                  
+                        </tr>
+                        <tr>
+                            <td colspan="6">Sub Total</td>
+                            <td>$ {{subtotal}}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5">Tax</td>
+                            <td>
+                                <select class="form-control" v-model="tax">
+                                    <option value=".06">CT Tax</option>
+                                    <option value=".00">Tax Free</option>
+                                </select>
+                            </td>
+                            <td>$ {{taxtotal}}</td>
+                        </tr>
+                        <tr>
+                           <td colspan="6">Total</td> 
+                           <td>$ {{grandtotal}}</td>
+                        </tr>
+                        <tr></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-3 col-mm-offset-1">
+                <div class="form-group">
+                    <label>Product ID</label>
+                    <input type="text" class="form-control" v-model="product.id">
+                </div>
+                <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" class="form-control" v-model="product.name">
+                </div>
+                <div class="form-group">
+                    <label>Product quantuty</label>
+                    <input type="text" class="form-control" v-model="product.qty">
+                </div>
+                <div class="form-group">
+                    <label>Product price</label>
+                    <input type="text" class="form-control" v-model="product.price">
+                </div>
+                <button @click.prevent="addToCart" class="btn btn-primary" >Add</button>
+            </div>
+        </div>
+
+    </div>
     <script src="https://unpkg.com/vue@2.6.11/dist/vue.js"></script>
-
+ 
     <script>
         var app = new Vue({
-            el: '#root',
+            el: '#app',
             data: {
-                names: ['ange', 'alain', 'franck']
+                'title': 'Autocalculation vue.js',
+                products: [
+                    {id: 1, name: 'Baju', qty: 3, price: 9},
+                    {id: 2, name: 'Selana', qty: 2, price: 13},
+                    {id: 3, name: 'Sepatu', qty: 5, price: 22.5}
+                ], 
+
+                product: {
+                    id: '', 
+                    name: '',
+                    qty: '', 
+                    price: ''
+                },
+
+                tax: 0.00
+            },
+            computed: {
+                subtotal: function(){
+                    return this.products.reduce((total, item) =>{
+                        return total + item.qty * item.price
+                    }, 0)
+                },
+                taxtotal: function(){
+                    return this.subtotal * this.tax
+                },
+                grandtotal: function(){
+                    return this.subtotal + this.taxtotal
+                }
+            },
+
+            methods: {
+                addToCart: function(){
+                    var id = this.product.id
+                    var name = this.product.name
+                    var qty = this.product.qty
+                    var price = this.product.price
+
+                    this.products.push({id: id, name: name, qty:qty, price:price})
+                    this.clearCart()
+                },
+                removeCart: function(item){
+                    var del = this.products.indexOf(item)
+                    this.products.splice(del, 1)
+
+                },
+                addQty: function(item){
+                    Object.assign(item, {
+                        qty: parseInt(item.qty) + 1
+                    })
+                },
+                removeQty: function(item){
+                    Object.assign(item, {
+                        qty: parseInt(item.qty) - 1
+                    })
+                },
+                clearCart: function(){
+                    this.product.id = ''
+                    this.product.name = ''
+                    this.product.qty = ''
+                    this.product.price = ''
+                },
+                itemtotal: function(item){
+                    return item.qty * item.price
+                }
+
             }
-        });
-        document.querySelector('#button').addEventListener('click', () => {
-            /*let name = document.querySelector('#input').value;
-            app.names.push(name);
-            */
-           
-            let name = document.querySelector('#input');
-            app.names.push(name.value);
-            name.value = '';
-        });
+
+            
+        })
     </script>
+  
+
 </body>
 </html>

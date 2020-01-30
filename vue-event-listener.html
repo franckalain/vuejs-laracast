@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>VueJs-Laracast</title>
+</head>
+<body>
+    
+<div id="root">
+    <ul>
+        <li v-for="name in names" v-text="name"></li>
+    </ul>
+
+    <input id="input" type="text" v-model="newName">
+    <button v-on:click="addName">Add Name</button>
+</div> 
+    
+    <script src="https://unpkg.com/vue@2.6.11/dist/vue.js"></script>
+
+    <script>
+        var app = new Vue({
+            el: '#root',
+            data: {
+                newName: '',
+                names: ['ange', 'alain', 'franck']
+            },
+
+            methods:{
+                addName(){
+                    alert('adding name');
+                }
+            },
+       
+
+        //mounted(){
+           // document.querySelector('#button').addEventListener('click', () => {
+            /*let name = document.querySelector('#input').value;
+            app.names.push(name);
+            */
+           
+            //let name = document.querySelector('#input');
+            //app.names.push(name.value);
+            //name.value = '';
+       // });
+       // }
+    });
+
+       
+    </script>
+</body>
+</html>
